@@ -8,7 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const db = client.db("treasury-yields");
     const user = await db
       .collection("users")
-      .insertOne({ username: body.username });
+      .insertOne({ username: body.username, orders: [] });
     res.json(user);
   } catch (e) {
     console.error(e);

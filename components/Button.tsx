@@ -1,11 +1,12 @@
 type ButtonProps = {
   label: String;
   onClick: () => void;
+  disabled?: boolean;
 };
 
-const Button = ({ label, onClick }: ButtonProps) => {
+const Button = ({ label, onClick, disabled = false }: ButtonProps) => {
   return (
-    <div
+    <button
       style={{
         border: "2px solid black",
         borderRadius: 20,
@@ -19,9 +20,10 @@ const Button = ({ label, onClick }: ButtonProps) => {
         marginRight: 10,
       }}
       onClick={onClick}
+      disabled={disabled}
     >
       {label}
-    </div>
+    </button>
   );
 };
 

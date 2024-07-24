@@ -2,10 +2,16 @@ import Head from "next/head";
 import client from "../lib/mongodb";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
-import { TreasuryData, getTreasuryData } from "../utils/getTreasuryData";
+import {
+  InterestRate,
+  TreasuryData,
+  getTreasuryData,
+} from "../utils/getTreasuryData";
 import Chart from "../components/Chart";
 import Header from "../components/Header";
 import { useAuth } from "../AuthContext";
+import OrderForm from "../components/OrderForm";
+import OrdersTable from "../components/OrdersTable";
 
 type ConnectionStatus = {
   isConnected: boolean;
@@ -15,7 +21,7 @@ export const getServerSideProps: GetServerSideProps<
   ConnectionStatus
 > = async () => {
   try {
-    await client.connect(); // `await client.connect()` will use the default database passed in the MONGODB_URI
+    await client.connect();
     return {
       props: { isConnected: true },
     };
@@ -31,6 +37,7 @@ export default function Home({
   isConnected,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [treasuryData, setTreasuryData] = useState<TreasuryData>();
+  const [order, setOrder] = useState<InterestRate>();
 
   useEffect(() => {
     const getInterestRates = async () => {
@@ -42,6 +49,14 @@ export default function Home({
 
   const { authUserId, isLoggedIn } = useAuth();
   const chartTitle = `Interest Rates for ${treasuryData?.date.toLocaleDateString()}`;
+
+  const selectOrder = (order: InterestRate) => {
+    setOrder(order);
+  };
+
+  const clearOrder = () => {
+    setOrder(undefined);
+  };
 
   return (
     <div className="container">
@@ -56,8 +71,17 @@ export default function Home({
       <main>
         <div className="chart-container">
           <h4>{chartTitle}</h4>
-          {treasuryData && <Chart interestRates={treasuryData.interestRates} />}
+          {treasuryData && (
+            <Chart
+              interestRates={treasuryData.interestRates}
+              onClick={selectOrder}
+            />
+          )}
         </div>
+        <div className="order-form-container">
+          {isLoggedIn && <OrderForm order={order} clearOrder={clearOrder} />}
+        </div>
+        <div className="orders-container">{isLoggedIn && <OrdersTable />}</div>
       </main>
 
       <footer>
@@ -91,6 +115,14 @@ export default function Home({
         }
 
         .chart-container {
+          flex: 2;
+          width: 100vw;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .order-form-container {
           flex: 2;
           width: 100vw;
           display: flex;

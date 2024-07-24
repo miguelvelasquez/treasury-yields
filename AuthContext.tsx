@@ -6,6 +6,8 @@ import {
   useContext,
   useState,
 } from "react";
+import { UserResponseType, postUser } from "./utils/postUser";
+import { postSignup } from "./utils/postSignup";
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -13,16 +15,18 @@ export const useAuth = () => {
 
 type AuthContextType = {
   authUserId: string;
-  setAuthUserId: Dispatch<SetStateAction<string>>;
   isLoggedIn: boolean;
-  setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+  signIn: (username: string) => Promise<UserResponseType | null>;
+  signUp: (username: string) => Promise<string>;
+  logOut: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
   authUserId: "",
-  setAuthUserId: () => {},
   isLoggedIn: false,
-  setIsLoggedIn: () => {},
+  signIn: async (username: string) => null,
+  signUp: async () => "",
+  logOut: () => {},
 });
 
 type AuthProviderProps = {
@@ -33,11 +37,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authUserId, setAuthUserId] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const signIn = async (username: string): Promise<UserResponseType | null> => {
+    const user = await postUser(username);
+    
+    
+    if (user != null) {
+      setIsLoggedIn(true);
+      setAuthUserId(user._id);
+      return user;
+    }
+    return null;
+  };
+
+  const signUp = async (username: string): Promise<string> => {
+    const userId = (await postSignup(username)).insertedId;
+    setIsLoggedIn(true);
+    setAuthUserId(userId);
+    return userId;
+  };
+
+  const logOut = () => {
+    setIsLoggedIn(false);
+    setAuthUserId("");
+  };
+
   const value = {
     authUserId,
-    setAuthUserId,
     isLoggedIn,
-    setIsLoggedIn,
+
+    signIn,
+    signUp,
+    logOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

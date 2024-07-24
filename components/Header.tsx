@@ -1,45 +1,33 @@
 import { useState } from "react";
 import { useAuth } from "../AuthContext";
 import Button from "./Button";
-import { postSignup } from "../utils/postSignup";
-import { postUser } from "../utils/postUser";
 
 const Header = () => {
-  const { isLoggedIn, setIsLoggedIn, setAuthUserId } = useAuth();
+  const { isLoggedIn, signUp, signIn, logOut } = useAuth();
   const [username, setUserName] = useState("");
 
-  const signIn = async () => {
-    const user = await postUser(username);
+  const handleSignIn = async () => {
+    const user = signIn(username);
     if (user != null) {
-      setIsLoggedIn(true);
-      setAuthUserId(username);
       setUserName("");
     }
-  };
-
-  const logOut = () => {
-    setIsLoggedIn(false);
-    setAuthUserId("");
   };
 
   const onClickPrimary = () => {
     if (isLoggedIn) {
       logOut();
     } else {
-      signIn();
+      handleSignIn();
     }
   };
 
-  const signup = async () => {
-    const userId = (await postSignup(username)).insertedId;
-    console.log(userId);
-    setIsLoggedIn(true);
-    setAuthUserId(userId);
+  const handleSignUp = async () => {
+    const userId = signUp(username);
     setUserName("");
   };
 
   const onClickSecondary = () => {
-    signup();
+    handleSignUp();
   };
 
   const primaryButtonLabel = isLoggedIn ? "Log out" : "Sign in";
