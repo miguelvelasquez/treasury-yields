@@ -16,6 +16,7 @@ const Button = ({ label, onClick }: ButtonProps) => {
         height: 20,
         width: "100",
         cursor: "pointer",
+        marginRight: 10,
       }}
       onClick={onClick}
     >

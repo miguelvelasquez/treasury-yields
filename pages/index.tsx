@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { TreasuryData, getTreasuryData } from "../utils/getTreasuryData";
 import Chart from "../components/Chart";
 import Header from "../components/Header";
+import { useAuth } from "../AuthContext";
 
 type ConnectionStatus = {
   isConnected: boolean;
@@ -39,6 +40,7 @@ export default function Home({
     getInterestRates();
   }, []);
 
+  const { authUserId, isLoggedIn } = useAuth();
   const chartTitle = `Interest Rates for ${treasuryData?.date.toLocaleDateString()}`;
 
   return (
