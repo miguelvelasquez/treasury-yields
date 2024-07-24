@@ -8,20 +8,29 @@ import {
   YAxis,
 } from "recharts";
 import { InterestRate } from "../utils/getTreasuryData";
+import { CategoricalChartState } from "recharts/types/chart/types";
 
 type ChartProps = {
   interestRates: InterestRate[];
+  onClick: (order: InterestRate) => void;
 };
 
-const Chart = ({ interestRates }: ChartProps) => {
+const Chart = ({ interestRates, onClick }: ChartProps) => {
+  const handleClick = (event: CategoricalChartState) => {
+    if (event?.activePayload) {
+      onClick(event?.activePayload[0].payload);
+    }
+  };
+
   return (
     <div className="container">
       <ResponsiveContainer aspect={1} minWidth={400}>
         <LineChart
           data={interestRates}
           margin={{ top: 50, right: 50, bottom: 50 }}
+          onClick={handleClick}
         >
-          <Line type="monotone" dataKey="yield" strokeWidth={3} />
+          <Line type="monotone" dataKey="interestRate" strokeWidth={3} />
           <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
           <XAxis dataKey="maturity" domain={[0, 30]} interval={0} />
           <YAxis domain={["auto", "auto"]} padding={{ bottom: 20 }} />

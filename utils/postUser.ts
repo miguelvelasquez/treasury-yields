@@ -1,6 +1,6 @@
-type UserResponseType = { username: string; _id: string };
+export type UserResponseType = { username: string; _id: string };
 
-type PostUserType = (Username: string) => Promise<UserResponseType | null>;
+type PostUserType = (username: string) => Promise<UserResponseType | null>;
 
 export const postUser: PostUserType = async (username) => {
   const response = await fetch("/api/user", {

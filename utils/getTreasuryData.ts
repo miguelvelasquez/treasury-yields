@@ -1,6 +1,6 @@
 export type InterestRate = {
-  maturity: String;
-  yield: Number;
+  maturity: string;
+  interestRate: number;
 };
 
 export type TreasuryData = {
@@ -53,6 +53,6 @@ const getInterestRateFromProperty = (property: Element): InterestRate => {
     : term.slice(0, 3);
   return {
     maturity,
-    yield: parseFloat(property.textContent ?? ""),
+    interestRate: parseFloat(property.textContent ?? ""),
   };
 };
