@@ -1,6 +1,10 @@
 import Head from "next/head";
 import client from "../lib/mongodb";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { useEffect, useState } from "react";
+import { TreasuryData, getTreasuryData } from "../utils/getTreasuryData";
+import Chart from "../components/Chart";
+import Header from "../components/Header";
 
 type ConnectionStatus = {
   isConnected: boolean;
@@ -25,14 +29,33 @@ export const getServerSideProps: GetServerSideProps<
 export default function Home({
   isConnected,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [treasuryData, setTreasuryData] = useState<TreasuryData>();
+
+  useEffect(() => {
+    const getInterestRates = async () => {
+      const data = await getTreasuryData();
+      setTreasuryData(data);
+    };
+    getInterestRates();
+  }, []);
+
+  const chartTitle = `Interest Rates for ${treasuryData?.date.toLocaleDateString()}`;
+
   return (
     <div className="container">
+      <header>
+        <Header />
+      </header>
       <Head>
         <title>Treasury Yields</title>
       </Head>
+      <h1>Treasury Yields</h1>
 
       <main>
-        <h1>Treasury Yields</h1>
+        <div className="chart-container">
+          <h4>{chartTitle}</h4>
+          {treasuryData && <Chart interestRates={treasuryData.interestRates} />}
+        </div>
       </main>
 
       <footer>
@@ -65,9 +88,17 @@ export default function Home({
           align-items: center;
         }
 
+        .chart-container {
+          flex: 2;
+          width: 100vw;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
         footer {
           width: 100%;
-          height: 100px;
+          height: 80px;
           border-top: 1px solid #eaeaea;
           display: flex;
           justify-content: center;
